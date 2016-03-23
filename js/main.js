@@ -21,6 +21,7 @@ $(document).ready(function(){
 			color: 'green'
 		}
 	});
+	console.log(rect1)
 	rect1.draw();
 	setTimeout(function(){
 		rect1.move(50, 10);
@@ -31,7 +32,6 @@ $(document).ready(function(){
 		}, 2000)
 	}, 2000);
 
-	two.update();
 });
 
 
@@ -52,23 +52,39 @@ var Rectangle = function(drawEngine, params){
 
 
 Rectangle.prototype.draw = function(){
-	this.it = this.de.makeRectangle(this.position.x, this.position.y, this.width, this.height);
-	this.it.fill = this.color;
-	this.it.linewidth = this.border.width;
-	this.it.stroke = this.border.color;
+	var it = this.it;
+	it = this.de.drawRectangle(this);
+	it.fill = this.color;
+	it.linewidth = this.border.width;
+	it.stroke = this.border.color;
+	this.de.render();
 }
 
 Rectangle.prototype.move = function(x, y){
 	this.it.translation.x += x;
 	this.it.translation.y += y;
-	this.de.update();
+	this.de.render();
 }
 
 Rectangle.prototype.remove = function(){
 	this.de.remove(this.obj);
-	this.de.update();
+	this.de.render();
 }
 
 var DrawEngine = function(Engine, el, params){
 	this.it = new Engine(params).appendTo(el);
+}
+DrawEngine.prototype.drawRectangle = function(rect){ 
+	return this.it.makeRectangle(rect.position.x, rect.position.y, rect.width, rect.height);
+}
+DrawEngine.prototype.move = function(obj, x, y){
+	
+}
+DrawEngine.prototype.render = function(){
+	var it = this.it;
+	it.update();
+}
+DrawEngine.prototype.remove = function(obj){
+	this.it.remove(obj);
+	this.render();
 }

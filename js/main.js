@@ -1,6 +1,10 @@
 var gParams = {
 	boxSize: 50,
-	skip: 50/2 + 10
+	skip: 50/2 + 10,
+	field: {
+	 	xCount: 15,
+	 	yCount: 10
+	}
 }
 
 var de;
@@ -18,10 +22,7 @@ $(document).ready(function(){
 	de = new DrawEngine(Engine, elem, params);
 
 	var mE = new MazeEngine({
-	 	field: {
-		 	xCount: 15,
-		 	yCount: 10
-	 	},
+	 	field: gParams.field,
 	 	startPosition: {
 	 		x: 0,
 	 		y: 0
@@ -100,18 +101,6 @@ var MazeEngine = function(params){
 	}
 
 	var build = function(){
-		var i = 0;
-			var f = function(){
-				if (i < 150){
-					makeStep();
-					++i;
-				}
-				else 
-					clearInterval(f);
-			}
-			setInterval(f, 200);
-
-
 		var makeStep = function(){
 			var currentPosition = pointer.getCurrentPosition();
 			var posibleRoutes = getPossibleRoute(currentPosition);
@@ -127,10 +116,30 @@ var MazeEngine = function(params){
 					return (item.x == pos.x && item.y == pos.y);
 				});
 			}
-			else
+			else {
 				boxToMove = posibleRoutes[_.random(0, posibleRoutes.length -1)];
+			}
 			de.movePointerToBoxPosition(pointer, boxToMove);
 		}
+
+
+		var start = function(){
+			var i = 0;
+			var step = setInterval(function(){
+				if (pointer.getHistory().length !== gParams.field.xCount * gParams.field.xCount){
+					makeStep();
+				}
+				else {
+					console.log('finish');
+					stop();
+				}
+			}, 100);
+			var stop = function(){
+				clearInterval(step);
+			}
+		}
+
+		start();
 	}
 
 	var field = generateField(params.field);

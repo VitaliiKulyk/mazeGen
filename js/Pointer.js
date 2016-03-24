@@ -32,11 +32,10 @@ var Pointer = function(params){
 	this.rectangle = function(){
 		return rectangle;
 	}
-
 	this.move = function(newBox){
 		currentPosition.x = newBox.x;
 		currentPosition.y = newBox.y;
-		if (!_.contains(history, currentPosition))
-			history.push(_.clone(currentPosition));
+
+		history.push(_.clone(currentPosition));
 	};
 }

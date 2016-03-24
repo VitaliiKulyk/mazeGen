@@ -1,6 +1,11 @@
-var de,
-	boxSize = 50,
-	skip = boxSize/2 + 10;
+var gParams = {
+	boxSize: 50,
+	skip: 50/2 + 10
+}
+
+var de;
+
+
 $(document).ready(function(){
 	var params = {
 		width: 800,
@@ -12,41 +17,85 @@ $(document).ready(function(){
 	var Engine = Two;
 	de = new DrawEngine(Engine, elem, params);
 
-	 var field = generateField({
-		 xCount: 15,
-		 yCount: 10
-	 });
-
-	var wall = mazeBuilder.drawWall(field[1], field[2])
-
-	var pointer = new Pointer({
-		startPosition: field[0]
+	var mE = new MazeEngine({
+	 	field: {
+		 	xCount: 15,
+		 	yCount: 10
+	 	},
+	 	startPosition: {
+	 		x: 0,
+	 		y: 0
+	 	}
 	});
+
+	//var wall = mazeBuilder.drawWall(field[1], field[2])
+
+	console.log(mE)
+	mE.build();
+
+	//de.moveToBoxPosition(pointer, field[4])
 });
 
+var MazeEngine = function(params){
+	var generateField = function(fieldParams){
+		var field = _.flatten(_.map(new Array(fieldParams.xCount), function(v1, x){
+			return _.map(new Array(fieldParams.yCount), function(v1, y){
+				var box  = new Box({x: x, y: y});
 
-var generateField = function(params){
-	var field = _.flatten(_.map(new Array(params.xCount), function(v1, x){
-		return _.map(new Array(params.yCount), function(v1, y){
-			return new Box({x: x, y: y});
-		});
-	}));
+				var boxParams = {
+					position: {
+						x: box.x * gParams.boxSize + gParams.skip,
+						y: box.y * gParams.boxSize + gParams.skip
+					},
+					width: gParams.boxSize,
+					height: gParams.boxSize,
+					color: 'red',
+					border: {
+						width: 1,
+						color: 'black'
+					}
+				}
 
-	_.each(field, function(box){
-		var boxParams = {
-			position: {
-				x: box.x * boxSize + skip,
-				y: box.y * boxSize + skip
-			},
-			width: boxSize,
-			height: boxSize,
-			color: 'red',
-			border: {
-				width: 2,
-				color: 'black'
+				box.setRectangle(de.drawRectangle(boxParams));
+
+				console.log('fu')
+
+				return box;
+			});
+		}));
+		return field;
+	}
+
+	var build = function(){
+		var i = 0;
+			var f = function(){
+				if (i < 5){
+					var d = field[_.random(0, field.length)];
+					de.movePointerToBoxPosition(pointer, d);
+					++i;
+				}
+				else 
+					clearInterval(f);
 			}
-		}
-		box.rectangle = de.drawRectangle(boxParams);
+			setInterval(f, 1000);
+	}
+
+	var field = generateField(params.field);
+
+	var pointer = new Pointer({
+		startPosition: params.startPosition
 	});
-	return field;
+
+	var startField = _.find(field, function(item){
+		return (item.x == params.startPosition.x && item.y == params.startPosition.y)
+	})
+
+
+	this.pointer = _.identity(pointer);
+	this.field = _.identity(field);
+	this.build = build;
+
 }
+
+
+

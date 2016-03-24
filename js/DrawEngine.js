@@ -10,10 +10,20 @@ var DrawEngine = function(Engine, el, params){
 		return result;
 	}
 
-	var move = function(obj, x, y){
-		obj.translation.y += y;
-		obj.translation.x += x;
-		this.render();
+	var moveObj = function(obj, x, y){
+		obj.translation.x = x + gParams.skip;
+		obj.translation.y = y + gParams.skip;
+		render();
+	}
+
+	var moveBox = function(obj, x, y){
+		moveObj(obj.rectangle, x * gParams.boxSize, y * gParams.boxSize);
+	}
+
+	var movePointerToBoxPosition = function(pointer, targetBox){
+		pointer.move(targetBox);
+		moveBox(pointer, targetBox.x, targetBox.y);
+		targetBox.close();
 	}
 
 	var render = function(){
@@ -28,7 +38,9 @@ var DrawEngine = function(Engine, el, params){
 	return {
 		drawRectangle: drawRectangle,
 		render: render,
-		move: move,
+		moveBox: moveBox,
+		moveObj: moveObj,
+		movePointerToBoxPosition: movePointerToBoxPosition,
 		remove: remove
 	}
 }

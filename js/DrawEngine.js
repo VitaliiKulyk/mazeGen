@@ -17,7 +17,7 @@ var DrawEngine = function(Engine, el, params){
 	}
 
 	var moveBox = function(obj, x, y){
-		moveObj(obj.rectangle, x * gParams.boxSize, y * gParams.boxSize);
+		moveObj(obj.rectangle(), x * gParams.boxSize, y * gParams.boxSize);
 	}
 
 	var movePointerToBoxPosition = function(pointer, targetBox){

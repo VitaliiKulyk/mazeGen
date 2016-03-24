@@ -30,13 +30,49 @@ $(document).ready(function(){
 
 	//var wall = mazeBuilder.drawWall(field[1], field[2])
 
-	console.log(mE)
 	mE.build();
 
 	//de.moveToBoxPosition(pointer, field[4])
 });
 
 var MazeEngine = function(params){
+
+	var getRelatedBoxesPosition = function(position){
+		return [
+			{
+				x: position.x,
+				y: position.y + 1
+			},
+			{
+				x: position.x,
+				y: position.y - 1
+			},
+			{
+				x: position.x + 1,
+				y: position.y 
+			},
+			{
+				x: position.x - 1,
+				y: position.y
+			}
+		];
+	}
+
+	var getPossibleRoute = function(position){
+		var related = getRelatedBoxesPosition(position);
+		var result = [];
+		_.each(related, function(pos){
+			var box = _.find(field, function(item){
+				return (item.x == pos.x && item.y == pos.y);
+			});
+			if (box && box.isOpen())
+				result.push(box);
+		});
+		return result;
+	}
+
+
+
 	var generateField = function(fieldParams){
 		var field = _.flatten(_.map(new Array(fieldParams.xCount), function(v1, x){
 			return _.map(new Array(fieldParams.yCount), function(v1, y){
@@ -57,9 +93,6 @@ var MazeEngine = function(params){
 				}
 
 				box.setRectangle(de.drawRectangle(boxParams));
-
-				console.log('fu')
-
 				return box;
 			});
 		}));
@@ -69,15 +102,35 @@ var MazeEngine = function(params){
 	var build = function(){
 		var i = 0;
 			var f = function(){
-				if (i < 5){
-					var d = field[_.random(0, field.length)];
-					de.movePointerToBoxPosition(pointer, d);
+				if (i < 150){
+					makeStep();
 					++i;
 				}
 				else 
 					clearInterval(f);
 			}
-			setInterval(f, 1000);
+			setInterval(f, 200);
+
+
+		var makeStep = function(){
+			var currentPosition = pointer.getCurrentPosition();
+			var posibleRoutes = getPossibleRoute(currentPosition);
+			
+			var boxToMove;
+			if (_.isEmpty(posibleRoutes)){
+				var history = pointer.getHistory();
+				var index = _.indexOf(history, _.find(history, function(item){
+					return (item.x == currentPosition.x && item.y == currentPosition.y);
+				}));
+				var pos = history[index-1];
+				boxToMove = _.find(field, function(item){
+					return (item.x == pos.x && item.y == pos.y);
+				});
+			}
+			else
+				boxToMove = posibleRoutes[_.random(0, posibleRoutes.length -1)];
+			de.movePointerToBoxPosition(pointer, boxToMove);
+		}
 	}
 
 	var field = generateField(params.field);
@@ -88,14 +141,12 @@ var MazeEngine = function(params){
 
 	var startField = _.find(field, function(item){
 		return (item.x == params.startPosition.x && item.y == params.startPosition.y)
-	})
+	});
+
+	startField.close();
 
 
 	this.pointer = _.identity(pointer);
 	this.field = _.identity(field);
 	this.build = build;
-
 }
-
-
-

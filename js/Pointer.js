@@ -6,7 +6,7 @@ var Pointer = function(params){
 		y: this.startPosition.y
 	};
 
-	this.rectangle  = de.drawRectangle({
+	var rectangle  = de.drawRectangle({
 		position: {
 			x: currentPosition.x * gParams.boxSize + gParams.skip,
 			y: currentPosition.y * gParams.boxSize + gParams.skip
@@ -22,12 +22,21 @@ var Pointer = function(params){
     
 	var history = [_.clone(currentPosition)];
 
-	this.getHistory = _.identity(history);
-	this.getCurrentPosition = _.identity(currentPosition);
+	this.getHistory = function(){
+		return history;
+	};
+	this.getCurrentPosition = function(){
+		return currentPosition;
+	}
+
+	this.rectangle = function(){
+		return rectangle;
+	}
 
 	this.move = function(newBox){
 		currentPosition.x = newBox.x;
 		currentPosition.y = newBox.y;
-		history.push(_.clone(currentPosition));
+		if (!_.contains(history, currentPosition))
+			history.push(_.clone(currentPosition));
 	};
 }

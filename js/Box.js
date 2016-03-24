@@ -7,8 +7,13 @@ var Box = function(params){
     this.y = params.y;
 
     this.id = _.identity(id);
-    this.isOpen = _.identity(open);
-    this.rectangle = _.identity(rectangle);
+    this.isOpen = function(){
+        return open;
+    }
+
+    this.rectangle = function(){
+        return rectangle;
+    }   
 
     this.setRectangle = function(obj){
     	rectangle = obj;

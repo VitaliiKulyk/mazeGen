@@ -1,90 +1,52 @@
+var de,
+	boxSize = 50,
+	skip = boxSize/2 + 10;
 $(document).ready(function(){
-	var params = { 
-		width: 800, 
-		height: 600 
+	var params = {
+		width: 800,
+		height: 600
 	}
+
+
 	var elem = document.getElementById('container');
 	var Engine = Two;
-	var drawEngine = new DrawEngine(Engine, elem, params);
+	de = new DrawEngine(Engine, elem, params);
 
+	 var field = generateField({
+		 xCount: 15,
+		 yCount: 10
+	 });
 
-	var rect1 = new Rectangle(drawEngine, {
-		position: {
-			x: 100,
-			y: 100
-		},
-		width: 100,
-		height: 200,
-		color: 'red',
-		border: {
-			width: 3,
-			color: 'green'
-		}
+	var wall = mazeBuilder.drawWall(field[1], field[2])
+
+	var pointer = new Pointer({
+		startPosition: field[0]
 	});
-	console.log(rect1)
-	rect1.draw();
-	setTimeout(function(){
-		rect1.move(50, 10);
-
-		setTimeout(function(){
-
-			rect1.remove();
-		}, 2000)
-	}, 2000);
-
 });
 
 
-var Rectangle = function(drawEngine, params){
-	this.de = drawEngine;
-	this.position = {
-		x: params.position.x,
-		y: params.position.y
-	}
-	this.width = params.width;
-	this.height = params.height;
-	this.color = params.color;
-	this.border = {
-		width: params.border.width,
-		color: params.border.color
-	}
-}
+var generateField = function(params){
+	var field = _.flatten(_.map(new Array(params.xCount), function(v1, x){
+		return _.map(new Array(params.yCount), function(v1, y){
+			return new Box({x: x, y: y});
+		});
+	}));
 
-
-Rectangle.prototype.draw = function(){
-	var it = this.it;
-	it = this.de.drawRectangle(this);
-	it.fill = this.color;
-	it.linewidth = this.border.width;
-	it.stroke = this.border.color;
-	this.de.render();
-}
-
-Rectangle.prototype.move = function(x, y){
-	this.it.translation.x += x;
-	this.it.translation.y += y;
-	this.de.render();
-}
-
-Rectangle.prototype.remove = function(){
-	this.de.remove(this.obj);
-	this.de.render();
-}
-
-var DrawEngine = function(Engine, el, params){
-	this.it = new Engine(params).appendTo(el);
-}
-DrawEngine.prototype.drawRectangle = function(rect){ 
-	return this.it.makeRectangle(rect.position.x, rect.position.y, rect.width, rect.height);
-}
-DrawEngine.prototype.move = function(obj, x, y){
-	
-}
-DrawEngine.prototype.render = function(){
-	var it = this.it;
-	it.update();
-}
-DrawEngine.prototype.remove = function(obj){
-	this.it.remove(obj);
-	this.render();
+	_.each(field, function(box){
+		var boxParams = {
+			position: {
+				x: box.x * boxSize + skip,
+				y: box.y * boxSize + skip
+			},
+			width: boxSize,
+			height: boxSize,
+			color: 'red',
+			border: {
+				width: 2,
+				color: 'black'
+			}
+		}
+		box.rectangle = de.drawRectangle(boxParams);
+	});
+	return field;
 }

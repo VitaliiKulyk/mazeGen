@@ -63,6 +63,11 @@ var MazeEngine = function(params){
     }
 
     var drawWall = function(box1, box2){
+        if (box1 instanceof Pointer){
+            box1.x = (box1.rectangle().translation.x - gParams.skip)/gParams.boxSize;
+            box1.y = (box1.rectangle().translation.y - gParams.skip)/gParams.boxSize;
+        }
+
         var getWallSide = function() {
             var difx = box1.x - box2.x,
                 dify = box1.y - box2.y;
@@ -124,7 +129,6 @@ var MazeEngine = function(params){
                 color: 'black'
             }
         }
-
         return de.drawRectangle(wallParams[side]);
     }
 
@@ -150,10 +154,9 @@ var MazeEngine = function(params){
         var boxes = getBoxesByPositions(positions);
         var result = [];
         _.each(boxes, function(box){
-            if (box.isOpen())
+            if (!box.isOpen())
                 result.push(box);
         });
-        console.log(result)
         return result;
     }
 
@@ -193,7 +196,7 @@ var MazeEngine = function(params){
         var start = function(){
             var i = 0;
             var step = setInterval(function(){
-                if (i<20){
+                if (i<100){
                     try{
                         makeStep();
                         i++

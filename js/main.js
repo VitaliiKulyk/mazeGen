@@ -16,7 +16,6 @@ $(document).ready(function(){
 		height: 600
 	}
 
-
 	var elem = document.getElementById('container');
 	var Engine = Two;
 	de = new DrawEngine(Engine, elem, params);
@@ -29,9 +28,5 @@ $(document).ready(function(){
 	 	}
 	});
 
-	//var wall = mazeBuilder.drawWall(field[1], field[2])
-
 	mE.build();
-
-	//de.moveToBoxPosition(pointer, field[4])
 });

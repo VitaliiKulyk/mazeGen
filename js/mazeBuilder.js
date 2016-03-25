@@ -160,21 +160,20 @@ var MazeEngine = function(params){
         return result;
     }
 
+    var stop = function(){  //optimize it in future
+        var stop = true;
+        _.each(field, function(box){
+            if (box.isOpen())
+                stop = false;
+        });
+        return stop;
+    }
+
     var build = function(){
         var makeStep = function(){
             var currentPosition = pointer.getCurrentPosition();
             var posibleRoutes = getPossibleRoute(currentPosition);
 
-            var wallBoxes = getBoxesForWall(currentPosition);
-            if (!_.isEmpty(wallBoxes)){
-                _.each(wallBoxes, function(wallBox){
-                    drawWall(pointer, wallBox);
-                });
-            }
-
-
-
-            
             var boxToMove;
             if (_.isEmpty(posibleRoutes)){
                 var history = pointer.getHistory();
@@ -189,31 +188,30 @@ var MazeEngine = function(params){
             else {
                 boxToMove = posibleRoutes[_.random(0, posibleRoutes.length -1)];
             }
+
+            var wallBoxes = getBoxesForWall(currentPosition);
+            if (!_.isEmpty(wallBoxes)){
+                _.each(wallBoxes, function(wallBox){
+                    if (wallBox !== boxToMove)
+                        drawWall(pointer, wallBox);
+                });
+            }
+
             de.movePointerToBoxPosition(pointer, boxToMove);
         }
 
 
         var start = function(){
-            var i = 0;
             var step = setInterval(function(){
-                if (i<100){
-                    try{
-                        makeStep();
-                        i++
-                    }
-                    catch (e){
-                        console.log(e)
-                        i++
-                    }
-
-                }
-                else {
-                    console.log('finish');
-                    stop();
+                if (!stop())
+                    makeStep();
+                else {   
+                    stopBuild();
                 }
             }, 100);
-            var stop = function(){
+            var stopBuild = function(){
                 clearInterval(step);
+                console.log('finish');
             }
         }
 

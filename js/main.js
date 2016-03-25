@@ -2,8 +2,8 @@ var gParams = {
 	boxSize: 50,
 	skip: 50/2 + 10,
 	field: {
-	 	xCount: 15,
-	 	yCount: 10
+	 	xCount: 36,
+	 	yCount: 18
 	}
 }
 
@@ -12,8 +12,8 @@ var de;
 
 $(document).ready(function(){
 	var params = {
-		width: 800,
-		height: 600
+		width: 1820,
+		height: 920
 	}
 
 	var elem = document.getElementById('container');

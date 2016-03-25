@@ -174,8 +174,9 @@ var MazeEngine = function(params){
             var currentPosition = pointer.getCurrentPosition();
             var posibleRoutes = getPossibleRoute(currentPosition);
 
-            var boxToMove;
+            var boxToMove;  var exit = false;
             if (_.isEmpty(posibleRoutes)){
+
                 var history = pointer.getHistory();
                 var index = _.indexOf(history, _.find(history, function(item){
                     return (item.x == currentPosition.x && item.y == currentPosition.y);
@@ -184,6 +185,7 @@ var MazeEngine = function(params){
                 boxToMove = _.find(field, function(item){
                     return (item.x == pos.x && item.y == pos.y);
                 });
+                exit = true;
             }
             else {
                 boxToMove = posibleRoutes[_.random(0, posibleRoutes.length -1)];
@@ -192,7 +194,7 @@ var MazeEngine = function(params){
             var wallBoxes = getBoxesForWall(currentPosition);
             if (!_.isEmpty(wallBoxes)){
                 _.each(wallBoxes, function(wallBox){
-                    if (wallBox !== boxToMove)
+                    if (!exit)
                         drawWall(pointer, wallBox);
                 });
             }
@@ -201,21 +203,30 @@ var MazeEngine = function(params){
         }
 
 
-        var start = function(){
-            var step = setInterval(function(){
-                if (!stop())
-                    makeStep();
-                else {   
-                    stopBuild();
+        var start = function(interval){
+            if (interval){
+                var step = setInterval(function(){
+                    if (!stop())
+                        makeStep();
+                    else {   
+                        stopBuild();
+                    }
+                }, interval);
+                var stopBuild = function(){
+                    clearInterval(step);
+                    console.log('finish');
+                    de.movePointerToBoxPosition(pointer, {x:-2, y:-2});
                 }
-            }, 100);
-            var stopBuild = function(){
-                clearInterval(step);
+            }
+            else {
+                while(!stop())
+                    makeStep();
                 console.log('finish');
+                de.movePointerToBoxPosition(pointer, {x:-2, y:-2});
             }
         }
 
-        start();
+        start(30);
     }
 
     var field = generateField(params.field);

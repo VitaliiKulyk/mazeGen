@@ -25,6 +25,11 @@ var Pointer = function(params){
 	this.getHistory = function(){
 		return history;
 	};
+
+	this.getPreviousStep = function(){
+		return _.clone(history[history.length - 2]);
+	}
+
 	this.getCurrentPosition = function(){
 		return currentPosition;
 	}
